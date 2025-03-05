@@ -17,25 +17,21 @@
         <table class="table table-striped table-hover">
             <thead class="table-dark">
             <tr>
-                <th>Nom</th>
-                <th>URL</th>
-                <th>Lien court</th>
-                <th>Clics</th>
-                <th>Actions</th>
+                <th class="text-nowrap">Nom</th> <!-- S'adapte au texte -->
+                <th class="text-truncate" style="max-width: 300px;">URL</th> <!-- Limite la largeur -->
+                <th class="text-center" style="width: 80px;">Clics</th> <!-- Ajusté pour être compact -->
+                <th class="text-nowrap text-end" style="width: 1px;">Actions</th> <!-- Ajusté à la taille des boutons -->
             </tr>
             </thead>
             <tbody>
             @foreach($shortLinks as $link)
                 <tr id="row-{{ $link->id }}">
-                    <td class="name text-truncate" style="max-width: 150px;">{{ $link->name }}</td>
-                    <td class="text-truncate" style="max-width: 200px;">
-                        <a href="{{ $link->url }}" target="_blank" title="{{ $link->url }}">{{ Str::limit($link->url, 30) }}</a>
+                    <td class="name">{{ $link->name }}</td> <!-- S'adapte au contenu -->
+                    <td class="text-truncate" style="max-width: 300px;">
+                        <a href="{{ $link->url }}" target="_blank" title="{{ $link->url }}">{{ $link->url }}</a>
                     </td>
-                    <td class="text-truncate" style="max-width: 150px;">
-                        <a href="{{ $link->shortLink }}" target="_blank">{{ Str::limit($link->shortLink, 20) }}</a>
-                    </td>
-                    <td class="clicks">{{ $link->clicks }}</td>
-                    <td class="d-flex gap-2">
+                    <td class="clicks text-center">{{ $link->clicks }}</td> <!-- Alignement centré -->
+                    <td class="text-nowrap text-end">
                         <button class="btn btn-secondary btn-sm copy-link" data-id="{{ $link->id }}" data-link="{{ $link->shortLink }}">
                             📋
                         </button>
@@ -45,17 +41,20 @@
                                 data-url="{{ $link->url }}">
                             ✏️
                         </button>
-                        <form action="{{ route('dashboard.delete-link', $link->id) }}" method="POST">
+                        <form action="{{ route('dashboard.delete-link', $link->id) }}" method="POST" class="d-inline">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger btn-sm">🗑️</button>
                         </form>
+                        <a href="{{ $link->shortLink }}" target="_blank" class="btn btn-info btn-sm">🔗</a>
                     </td>
                 </tr>
             @endforeach
             </tbody>
         </table>
     </div>
+
+
 
     <!-- Pagination Bootstrap -->
     <form method="GET" action="{{ route('dashboard') }}" class="mb-3">
