@@ -4,11 +4,19 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property string $email
+ * @property-read Collection<int, ShortLink> $shortLinks
+ * @property-read int|null $short_links_count
+ */
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
@@ -51,5 +59,4 @@ class User extends Authenticatable
     {
         return $this->hasMany(ShortLink::class);
     }
-
 }
