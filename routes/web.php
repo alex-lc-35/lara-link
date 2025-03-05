@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TestController;
 use App\Http\Middleware\LocalOnly;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
@@ -20,6 +21,8 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(LocalOnly::class)->prefix('dev')->group(function () {
+    Route::get('/back', [TestController::class, 'test']);
+
     Route::get('/page', function () {
         return view('pages.test');
     });
