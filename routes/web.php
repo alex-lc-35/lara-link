@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ShortLinkController;
 use App\Http\Controllers\TestController;
 use App\Http\Middleware\LocalOnly;
 use Illuminate\Support\Facades\Route;
@@ -10,9 +12,15 @@ Route::get('/', function () {
     return view('pages.home');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::middleware(['auth'])->prefix('dashboard')->group(function () {
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::delete('/delete-link/{id}', [DashboardController::class, 'deleteLink'])->name('dashboard.delete-link');
+    Route::post('/create-link', [DashboardController::class, 'createLink'])->name('dashboard.create-link');
+});
+
+Route::middleware(['auth'])->prefix('short-link')->group(function () {
+    Route::post('/copy-increment/{id}', [ShortLinkController::class, 'copyIncrement'])->name('short-link.copy-increment');
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
