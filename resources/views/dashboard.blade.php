@@ -12,14 +12,6 @@
         </div>
     @endif
 
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            @foreach ($errors->all() as $error)
-                <p>{{ $error }}</p>
-            @endforeach
-        </div>
-    @endif
-
     <!-- Tableau -->
     <div class="table-responsive">
         <table class="table table-striped table-hover">
@@ -81,9 +73,22 @@
     </div>
 
     <!-- Formulaire de création/mise à jour -->
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            @foreach ($errors->all() as $error)
+                <p>{{ $error }}</p>
+            @endforeach
+        </div>
+    @endif
+
     <form id="link-form" action="{{ route('dashboard.create-link') }}" method="POST" class="mb-4">
         @csrf
         <input type="hidden" id="link-id" name="id">
+
+        <div class="d-flex justify-content-between">
+            <h4 id="form-title">Créer un lien</h4>
+            <button type="button" class="btn btn-secondary btn-sm d-none" id="reset-form">Ajouter un nouveau</button>
+        </div>
 
         <div class="mb-3">
             <label for="name" class="form-label">Nom</label>
@@ -149,8 +154,23 @@
                 let updateUrl = "{{ route('dashboard.create-link') }}".replace('create-link', 'update-link/') + linkId;
                 $("#link-form").attr("action", updateUrl);
 
-                // Modifier le bouton
+                // Modifier le texte du formulaire
+                $("#form-title").text("Modifier un lien");
                 $("#link-form button[type='submit']").text("Modifier");
+
+                // Afficher le bouton "Ajouter un nouveau"
+                $("#reset-form").removeClass("d-none");
+            });
+
+            // Réinitialiser le formulaire en mode "Créer"
+            $("#reset-form").click(function () {
+                $("#link-form").attr("action", "{{ route('dashboard.create-link') }}");
+                $("#link-id").val("");
+                $("#name").val("");
+                $("#url").val("");
+                $("#form-title").text("Créer un lien");
+                $("#link-form button[type='submit']").text("Créer");
+                $("#reset-form").addClass("d-none");
             });
         });
     </script>

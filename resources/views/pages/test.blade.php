@@ -3,33 +3,22 @@
 @section('title', 'Test Bootstrap & jQuery')
 
 @section('content')
-    <h1 class="text-center text-primary">Test Bootstrap & jQuery</h1>
-
-    <!-- TEST JQUERY -->
-    <button id="test-btn" class="btn btn-success">Clique-moi</button>
-    <p id="message" class="mt-3 text-muted">Attends un clic...</p>
-
-    <!-- TEST AJAX -->
-    <input type="text" id="text-input" class="form-control mb-3" placeholder="Entrez du texte...">
-
-    <button id="ajax-submit" class="btn btn-warning">Envoyer AJAX</button>
-
-    <p id="response-message" class="mt-3 text-muted"></p>
-
-    <!-- TEST MODALE -->
-    <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#exampleModal">
-        Ouvrir la modale
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#testModal">
+        Ouvrir la Modale (HTML)
     </button>
 
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <button id="open-modal-js" class="btn btn-secondary">Ouvrir la Modale (JS)</button>
+
+    <!-- Modale Bootstrap -->
+    <div class="modal fade" id="testModal" tabindex="-1" aria-labelledby="testModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Modale Dynamique</h5>
+                    <h5 class="modal-title" id="testModalLabel">Modale de Test</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Ma modale</p>
+                    Ceci est une modale de test.
                 </div>
             </div>
         </div>
@@ -37,50 +26,13 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            if (typeof $ !== 'undefined') {
-                console.log("jQuery chargé !");
+            console.log("Bootstrap JS est-il chargé ?", typeof bootstrap !== "undefined" ? "Oui" : "Non");
 
-                /* TEST JQUERY */
-                $("#test-btn").click(function() {
-                    $("#message").text("jQuery OK")
-                        .removeClass("text-muted")
-                        .addClass("text-success fw-bold");
-                });
-
-                $("#change-text").click(function() {
-                    $("#modal-message").text("Le texte modifié");
-                });
-
-                /* TEST AJAX */
-                $("#ajax-submit").click(function() {
-                    let textValue = $("#text-input").val();
-
-                    $.ajax({
-                        url: "{{ route('test.ajax') }}",
-                        type: "POST",
-                        data: {
-                            text: textValue,
-                            _token: "{{ csrf_token() }}"
-                        },
-                        success: function(response) {
-                            console.log("Réponse reçue :", response);
-                            $("#response-message").text(response.message)
-                                .removeClass("text-danger text-muted")
-                                .addClass("text-success fw-bold");
-                        },
-                        error: function(xhr) {
-                            let response = xhr.responseJSON;
-                            console.error("Erreur AJAX :", response);
-                            $("#response-message").text(response.message)
-                                .removeClass("text-success text-muted")
-                                .addClass("text-danger fw-bold");
-                        }
-                    });
-                });
-
-            } else {
-                console.error("jQuery n'est pas chargé !");
-            }
+            // Ouvrir la modale en JS
+            document.getElementById("open-modal-js").addEventListener("click", function () {
+                let modal = new bootstrap.Modal(document.getElementById("testModal"));
+                modal.show();
+            });
         });
     </script>
 @endsection
