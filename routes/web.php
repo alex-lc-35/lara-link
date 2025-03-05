@@ -12,10 +12,14 @@ Route::get('/', function () {
     return view('pages.home');
 });
 
+Route::get('/sl/{slug}', [ShortLinkController::class, 'redirect'])->name('short-link.redirect');
+Route::get('/not-found', [ShortLinkController::class, 'notFound'])->name('short-link.not-found');
+
 Route::middleware(['auth'])->prefix('dashboard')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-    Route::delete('/delete-link/{id}', [DashboardController::class, 'deleteLink'])->name('dashboard.delete-link');
     Route::post('/create-link', [DashboardController::class, 'createLink'])->name('dashboard.create-link');
+    Route::post('/update-link/{id}', [DashboardController::class, 'updateLink'])->name('dashboard.update-link');
+    Route::delete('/delete-link/{id}', [DashboardController::class, 'deleteLink'])->name('dashboard.delete-link');
 });
 
 Route::middleware(['auth'])->prefix('short-link')->group(function () {

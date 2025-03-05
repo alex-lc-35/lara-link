@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Services\ShortLinkService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class DashboardController extends Controller
 {
@@ -36,8 +37,18 @@ class DashboardController extends Controller
         try {
             $this->shortLinkService->create($request->only(['name', 'url']));
             return redirect()->route('dashboard')->with('success', 'Lien créé avec succès.');
-        } catch (\Exception $e) {
-            return redirect()->route('dashboard')->withErrors(['error' => $e->getMessage()]);
+        } catch (ValidationException $e) {
+            return redirect()->route('dashboard')->withErrors($e->errors())->withInput();
+        }
+    }
+
+    public function updateLink(Request $request, $id)
+    {
+        try {
+            $this->shortLinkService->update($id, $request->only(['name', 'url']));
+            return redirect()->route('dashboard')->with('success', 'Lien mis à jour avec succès.');
+        } catch (ValidationException $e) {
+            return redirect()->route('dashboard')->withErrors($e->errors())->withInput();
         }
     }
 }

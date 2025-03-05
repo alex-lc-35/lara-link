@@ -3,6 +3,7 @@
 @section('title', 'Dashboard')
 
 @section('content')
+
     <!-- Affichage des messages Flash -->
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -18,7 +19,6 @@
             @endforeach
         </div>
     @endif
-
 
     <!-- Tableau -->
     <div class="table-responsive">
@@ -37,21 +37,20 @@
                 <tr id="row-{{ $link->id }}">
                     <td class="name text-truncate" style="max-width: 150px;">{{ $link->name }}</td>
                     <td class="text-truncate" style="max-width: 200px;">
-                        <a href="{{ $link->url }}" target="_blank"
-                           title="{{ $link->url }}">{{ Str::limit($link->url, 30) }}</a>
+                        <a href="{{ $link->url }}" target="_blank" title="{{ $link->url }}">{{ Str::limit($link->url, 30) }}</a>
                     </td>
                     <td class="text-truncate" style="max-width: 150px;">
                         <a href="{{ $link->shortLink }}" target="_blank">{{ Str::limit($link->shortLink, 20) }}</a>
                     </td>
                     <td class="clicks">{{ $link->clicks }}</td>
                     <td class="d-flex gap-2">
-                        <button class="btn btn-secondary btn-sm copy-link" data-id="{{ $link->id }}"
-                                data-link="{{ $link->shortLink }}">
+                        <button class="btn btn-secondary btn-sm copy-link" data-id="{{ $link->id }}" data-link="{{ $link->shortLink }}">
                             📋
                         </button>
-                        <button class="btn btn-warning btn-sm edit-link" data-bs-toggle="modal"
-                                data-bs-target="#editModal"
-                                data-id="{{ $link->id }}" data-name="{{ $link->name }}">
+                        <button class="btn btn-warning btn-sm edit-link"
+                                data-id="{{ $link->id }}"
+                                data-name="{{ $link->name }}"
+                                data-url="{{ $link->url }}">
                             ✏️
                         </button>
                         <form action="{{ route('dashboard.delete-link', $link->id) }}" method="POST">
@@ -81,9 +80,11 @@
         {{ $shortLinks->links('pagination::bootstrap-5') }}
     </div>
 
-    <!-- Formulaire -->
-    <form action="{{ route('dashboard.create-link') }}" method="POST" class="mb-4">
+    <!-- Formulaire de création/mise à jour -->
+    <form id="link-form" action="{{ route('dashboard.create-link') }}" method="POST" class="mb-4">
         @csrf
+        <input type="hidden" id="link-id" name="id">
+
         <div class="mb-3">
             <label for="name" class="form-label">Nom</label>
             <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" required>
@@ -105,11 +106,12 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            // Gestion du bouton "Copier"
             $(document).on('click', '.copy-link', function () {
                 let button = $(this);
                 let linkId = button.data('id');
                 let linkUrl = button.data('link');
-                let clickCountCell = $("#row-" + linkId + " .clicks"); // Sélectionne la bonne cellule
+                let clickCountCell = $("#row-" + linkId + " .clicks");
                 let originalButtonText = button.html();
                 let copyIncrementUrl = "{{ route('short-link.copy-increment', '') }}/" + linkId;
 
@@ -121,7 +123,7 @@
                         return $.post(copyIncrementUrl);
                     })
                     .then(newCount => {
-                        clickCountCell.text(newCount); // Mettre à jour la cellule des clics
+                        clickCountCell.text(newCount);
                     })
                     .finally(() => {
                         setTimeout(() => {
@@ -130,6 +132,25 @@
                         }, 1000);
                     })
                     .catch(error => console.error("Erreur :", error));
+            });
+
+            // Gestion du bouton "Éditer"
+            $(document).on('click', '.edit-link', function () {
+                let linkId = $(this).data('id');
+                let linkName = $(this).data('name');
+                let linkUrl = $(this).data('url');
+
+                // Modifier le formulaire
+                $("#link-id").val(linkId);
+                $("#name").val(linkName);
+                $("#url").val(linkUrl);
+
+                // Modifier l'action du formulaire
+                let updateUrl = "{{ route('dashboard.create-link') }}".replace('create-link', 'update-link/') + linkId;
+                $("#link-form").attr("action", updateUrl);
+
+                // Modifier le bouton
+                $("#link-form button[type='submit']").text("Modifier");
             });
         });
     </script>
